@@ -19,7 +19,8 @@ const (
 )
 
 type UserSession struct {
-	State int
+	State          int
+	ConversationID string
 	// Symbol and AssetID will be available when State == UserSessionStateSpecifiedSymbol
 	Symbol  string
 	AssetID string
