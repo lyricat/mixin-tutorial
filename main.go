@@ -15,8 +15,9 @@ import (
 var (
 	client *mixin.Client
 	// Specify the keystore file in the -config parameter
-	config = flag.String("config", "", "keystore file path")
-	pin    = flag.String("pin", "", "pin of keystore")
+	config       = flag.String("config", "", "keystore file path")
+	pin          = flag.String("pin", "", "pin of keystore")
+	clientSecret = flag.String("clientSecret", "", "client secret")
 )
 
 func main() {
@@ -71,6 +72,9 @@ func main() {
 	}
 
 	ctx := context.Background()
+
+	// Start httpd
+	StartHttpServer()
 
 	// Start the message loop.
 	for {

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mixin Tutorial</title>
+  <style>
+    ul li {
+      font-family: monospace;
+    }
+  </style>
+</head>
+<body onload="onLoad()">
+  {{if .Signed }}
+    {{if .Loading }}
+      <div>Loading Snapshots of BTC, please refresh the page later.</div>
+    {{ else}}
+      <div>BTC Balance: <strong id="balance"></strong>
+        BTC</div>
+      <ul id="snapshots">
+      </ul>
+    {{end}}
+  {{else}}
+  <div>You haven't authorize yet.</div>
+  <button onclick="auth()">Authorize</button>
+  {{end}}
+  <script>
+    function auth() {
+      const clientID = "{{.ClientID}}";
+      const url = "https://mixin.one/oauth/authorize?client_id="+clientID+"&scope=PROFILE:READ+ASSETS:READ+SNAPSHOTS:READ&response_type=code";
+      window.location.href = url;
+    }
+    async function onLoad() {
+      const balanceElm = document.getElementById('balance');
+      const snapshotsElm = document.getElementById('snapshots');
+      if (balanceElm && snapshotsElm) {
+
+        // fetch btc balance
+        let resp = await fetch('/api/assets/balance',{
+          method:'GET',
+          cache: 'no-cache',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        const asset = await resp.json();
+        balanceElm.innerText = asset.balance;
+
+        // fetch btc snapshots
+        resp = await fetch('/api/assets/snapshots',{
+          method:'GET',
+          cache: 'no-cache',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        const snapshots = await resp.json();
+        snapshotsElm.innerHTML = snapshots.map((x) => {
+          const date = new Date(x.created_at)
+          return "<li>" + date.toLocaleDateString() + ': ' + x.amount + " BTC</li>"
+        }).join('\n')
+
+      }
+    }
+  </script>
+</body>
+</html>
