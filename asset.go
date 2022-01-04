@@ -31,16 +31,17 @@ var (
 	supportedAssets map[string]string
 )
 
-func initAssets() {
+func initAssets() error {
 	// Gather assets from https://api.4swap.org/api/assets
 	resp, err := http.Get("https://api.4swap.org/api/assets")
 	if err != nil {
-		log.Fatalln(err)
+		return err
 	}
+	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		log.Fatalln(err)
+		return err
 	}
 
 	var result SwapAssetsResp
@@ -53,7 +54,7 @@ func initAssets() {
 	}
 
 	log.Printf("Supported Assets: %d\n", len(supportedAssets))
-	return
+	return nil
 }
 
 func getAssetBySymbol(ctx context.Context, symbol string) (*mixin.Asset, error) {
