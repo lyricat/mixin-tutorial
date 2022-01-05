@@ -44,7 +44,9 @@ func main() {
 	}
 
 	// Get supported assets from 4swap
-	initAssets()
+	if err := initAssets(); err != nil {
+		log.Fatalln(err)
+	}
 
 	// Prepare the message loop that handle every incoming messages,
 	// We use a callback function to handle them.
